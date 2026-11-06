@@ -80,8 +80,8 @@ jobs:
             # `pm2 reload` does a zero-downtime rolling restart (vs
             # `systemctl restart`'s brief drop) — this is the concrete
             # payoff called out in the PM2 bonus chapter.
-            sudo -u yntp -H pm2 reload backend
-            sudo -u yntp -H pm2 reload frontend
+            # sudo -u yntp -H pm2 reload backend
+            # sudo -u yntp -H pm2 reload frontend
 
             # ---- Verify (the SSR server needs a few seconds to come up) ----
             for i in $(seq 1 10); do
