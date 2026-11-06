@@ -29,7 +29,8 @@ function HomePage() {
 				<ArrowRight className="ml-2 size-4" />
 			</Button>
 			<p className="absolute inset-x-0 bottom-4 text-xs text-muted-foreground">
-				Project by Prince (By Forking from Project by Your Next Tech Partner - 2)
+				Project by Prince (By Forking from Project by Your Next Tech Partner -
+				2)
 			</p>
 		</main>
 	);
