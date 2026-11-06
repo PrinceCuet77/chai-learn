@@ -1,13 +1,13 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowRight } from 'lucide-react';
-import { Button } from '#/components/ui/button';
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRight } from "lucide-react";
+import { Button } from "#/components/ui/button";
 
-export const Route = createFileRoute('/')({
-  component: HomePage,
+export const Route = createFileRoute("/")({
+	component: HomePage,
 });
 
 function HomePage() {
-  return (
+	return (
     <main className='relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 text-center'>
       <p className='text-sm font-medium text-primary'>
         Welcome to Chai aur DevOps
@@ -29,7 +29,7 @@ function HomePage() {
         <ArrowRight className='ml-2 size-4' />
       </Button>
       <p className='absolute inset-x-0 bottom-4 text-xs text-muted-foreground'>
-        Project by Prince (By Forking from Your Next Tech Partner)
+        Project by Prince (By Forking from Project by Your Next Tech Partner)
       </p>
     </main>
   );
