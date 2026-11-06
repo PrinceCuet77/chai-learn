@@ -5,22 +5,21 @@ name: CD
 #
 # Required repo secrets:
 #   EC2_HOST         - server hostname / IP
-#   EC2_USER         - SSH user (needs passwordless sudo for none of this
-#                      anymore — PM2 runs as `yntp`, no systemctl calls)
+#   EC2_USER         - SSH user (e.g. `ubuntu`); no sudo needed for deploys
 #   SSH_PRIVATE_KEY  - private key whose public half is in the user's
 #                      ~/.ssh/authorized_keys on the server
 #
 # Server is expected to be set up by hand first (this is the "deploy
 # without CI/CD" lesson):
-#   - repo cloned at /opt/chai-learn, owned by yntp:devops, tracking `main`
+#   - repo cloned at /opt/chai-learn, owned by EC2_USER:devops (group-
+#     writable, setgid dirs), tracking `main`, and listed in
+#     /etc/gitconfig as a safe.directory
 #   - node (system-wide via NodeSource, /usr/bin/node) and pnpm/pm2
 #     installed globally so any user can reach them
 #   - backend/.env.production  with DATABASE_URL, BETTER_AUTH_SECRET, etc.
 #   - frontend/.env.production with the real VITE_API_URL and PORT
-#   - PM2 processes named `backend` and `frontend`, running as `yntp`,
-#     registered via `pm2 save` + `pm2 startup` (see PM2 bonus chapter)
-#   - EC2_USER has passwordless sudo to run commands as `yntp`
-#     (sudo -u yntp), OR EC2_USER *is* yntp and owns the checkout directly
+#   - PM2 processes named `backend` and `frontend`, started by EC2_USER
+#     WITHOUT sudo, registered via `pm2 save` + `pm2 startup`
 
 on:
   workflow_run:
@@ -76,12 +75,14 @@ jobs:
             pnpm --dir frontend run build
 
             # ---- Swap to the new version ----
-            # PM2 processes run under yntp's PM2 daemon, not the SSH user's.
+            # PM2 processes run under the SSH user's own PM2 daemon
+            # (started WITHOUT sudo), so no sudo is needed here.
             # `pm2 reload` does a zero-downtime rolling restart (vs
             # `systemctl restart`'s brief drop) — this is the concrete
             # payoff called out in the PM2 bonus chapter.
-            # sudo -u yntp -H pm2 reload backend
-            # sudo -u yntp -H pm2 reload frontend
+            pm2 reload backend --update-env
+            pm2 reload frontend --update-env
+            pm2 save
 
             # ---- Verify (the SSR server needs a few seconds to come up) ----
             for i in $(seq 1 10); do
